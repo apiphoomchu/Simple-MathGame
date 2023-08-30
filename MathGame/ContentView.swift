@@ -13,7 +13,8 @@ struct ContentView: View {
     @State private var number2 = Int.random(in: 1...10)
     
     @State private var userAnswer: String = ""
-    @State private var isCorrect: Bool? = nil
+    @State private var score: Int = 0
+    @State private var showGameOverAlert: Bool = false
     
     var correctAnswer: Int {
         return number1 * number2
@@ -21,6 +22,9 @@ struct ContentView: View {
     
     var body: some View {
         VStack(spacing: 20) {
+            Text("Score: \(score)")
+                .font(.headline)
+            
             Text("Guess the answer:")
             Text("\(number1) × \(number2) = ?")
                 .font(.largeTitle)
@@ -32,38 +36,37 @@ struct ContentView: View {
             
             Button("Check Answer") {
                 if let userInt = Int(userAnswer), userInt == correctAnswer {
-                    isCorrect = true
+                    score += 1
+                    nextProblem()
                 } else {
-                    isCorrect = false
+                    showGameOverAlert = true
                 }
             }
             .padding()
             .background(Color.blue)
             .foregroundColor(.white)
             .cornerRadius(8)
-            
-            if let correct = isCorrect {
-                if correct {
-                    Text("Correct!")
-                        .foregroundColor(.green)
-                } else {
-                    Text("Wrong! Try again.")
-                        .foregroundColor(.red)
-                }
-            }
-            
-            Button("Next") {
-                number1 = Int.random(in: 1...10)
-                number2 = Int.random(in: 1...10)
-                userAnswer = ""
-                isCorrect = nil
-            }
-            .padding()
-            .background(Color.orange)
-            .foregroundColor(.white)
-            .cornerRadius(8)
         }
         .padding()
+        .alert(isPresented: $showGameOverAlert, content: {
+            Alert(
+                title: Text("Game Over"),
+                message: Text("Your total score is \(score). Do you want to play again?"),
+                primaryButton: .default(Text("Yes"), action: startNewGame),
+                secondaryButton: .cancel(Text("No"))
+            )
+        })
+    }
+    
+    func nextProblem() {
+        number1 = Int.random(in: 1...10)
+        number2 = Int.random(in: 1...10)
+        userAnswer = ""
+    }
+    
+    func startNewGame() {
+        score = 0
+        nextProblem()
     }
 }
 
