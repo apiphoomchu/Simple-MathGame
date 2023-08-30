@@ -28,6 +28,7 @@ struct ContentView: View {
             Text("Guess the answer:")
             Text("\(number1) × \(number2) = ?")
                 .font(.largeTitle)
+                .fontWeight(.semibold)
             
             TextField("Your answer", text: $userAnswer)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
